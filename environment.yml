@@ -1,0 +1,12 @@
+name: dl-zero2one
+channels:
+- defaults
+dependencies:
+- ipykernel
+- ipython
+- matplotlib
+- numpy
+- pandas
+- Pillow
+- seaborn
+
