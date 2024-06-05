@@ -1,0 +1,8 @@
+**/.vscode
+# MacOS
+.DS_Store
+# Notebook
+.ipynb_checkpoints/
+**/__pycache__/
+*.egg-info/
+*~*
