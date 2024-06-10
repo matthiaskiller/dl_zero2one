@@ -33,6 +33,11 @@ class ClassificationNet(Network):
 
         self.cache = None
 
+        self.memory = 0
+        self.memory_forward = 0
+        self.memory_backward = 0
+        self.num_operation = 0
+
         # Initialize random gaussian weights for all layers and zero bias
         self.num_layer = num_layer
         self.params = {'W1': std * np.random.randn(input_size, hidden_size),
@@ -56,6 +61,7 @@ class ClassificationNet(Network):
     def forward(self, X):
         """
         Performs the forward pass of the model.
+
         :param X: Input data of shape N x D. Each X[i] is a training sample.
         :return: Predicted value for the data in X, shape N x 1
                  1-dimensional array of length N with the classification scores.
@@ -81,16 +87,18 @@ class ClassificationNet(Network):
 
         # last layer contains no activation functions
         W, b = self.params['W' + str(self.num_layer)],\
-               self.params['b' + str(self.num_layer)]
+            self.params['b' + str(self.num_layer)]
         y, cache_affine = affine_forward(X, W, b)
         self.cache["affine" + str(self.num_layer)] = cache_affine
-        self.reg['W' + str(self.num_layer)] = np.sum(W ** 2) * self.reg_strength
+        self.reg['W' + str(self.num_layer)] = np.sum(W **
+                                                     2) * self.reg_strength
 
         return y
 
     def backward(self, dy):
         """
         Performs the backward pass of the model.
+
         :param dy: N x 1 array. The gradient wrt the output of the network.
         :return: Gradients of the model output wrt the model weights
         """
@@ -116,7 +124,7 @@ class ClassificationNet(Network):
 
             # Refresh the gradients
             self.grads['W' + str(i + 1)] = dW + 2 * self.reg_strength * \
-                                           self.params['W' + str(i + 1)]
+                self.params['W' + str(i + 1)]
             self.grads['b' + str(i + 1)] = db
 
         return self.grads
@@ -126,7 +134,8 @@ class ClassificationNet(Network):
         model = {self.model_name: self}
         if not os.path.exists(directory):
             os.makedirs(directory)
-        pickle.dump(model, open(directory + '/' + self.model_name + '.p', 'wb'))
+        pickle.dump(model, open(directory + '/' +
+                                self.model_name + '.p', 'wb'))
 
     def get_dataset_prediction(self, loader):
         scores = []
@@ -146,3 +155,61 @@ class ClassificationNet(Network):
         acc = (labels == preds).mean()
 
         return labels, preds, acc
+
+class MyOwnNetwork(ClassificationNet):
+    """
+    Your first fully owned network!
+
+    You can define any arbitrary network architecture here!
+
+    As a starting point, you can use the code from ClassificationNet above as 
+    reference or even copy it to MyOwnNetwork, but of course you're also free 
+    to come up with a complete different architecture and add any additional 
+    functionality! (Without renaming class functions though ;))
+    """
+
+    def __init__(self, activation=Sigmoid(), num_layer=2,
+                 input_size=3 * 32 * 32, hidden_size=100,
+                 std=1e-3, num_classes=10, reg=0, **kwargs):
+        """
+        Your network initialization. For reference and starting points, check
+        out the classification network above.
+        """
+
+        super(ClassificationNet, self).__init__("cifar10_classification_net")
+
+        ########################################################################
+        # TODO:  Your initialization here                                      #
+        ########################################################################
+
+        pass
+
+        ########################################################################
+        #                           END OF YOUR CODE                           #
+        ########################################################################
+
+    def forward(self, X):
+        out = None
+        ########################################################################
+        # TODO:  Your forward here                                             #
+        ########################################################################
+
+        pass
+
+        ########################################################################
+        #                           END OF YOUR CODE                           #
+        ########################################################################
+        return out
+
+    def backward(self, dy):
+        grads = None
+        ########################################################################
+        # TODO:  Your backward here                                            #
+        ########################################################################
+
+        pass
+
+        ########################################################################
+        #                           END OF YOUR CODE                           #
+        ########################################################################
+        return grads

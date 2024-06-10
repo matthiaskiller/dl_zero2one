@@ -55,11 +55,71 @@ class Relu:
         :return: dx: the gradient w.r.t. input X, of the same shape as X
         """
         x = cache
-        dx = dout
-        dx[x <= 0] = 0
+        dx = np.greater(0, x) * dout
 
         return dx
+    
+class LeakyRelu:
+    def __init__(self, slope=0.01):
+        self.slope = slope
 
+    def forward(self, x):
+        """
+        :param x: Inputs, of any shape
+
+        :return out: Output, of the same shape as x
+        :return cache: Cache, for backward computation, of the same shape as x
+        """
+        
+        outputs = np.where(x < 0, self.slope*x, x)
+        cache = x
+
+       
+        return outputs, cache
+
+    def backward(self, dout, cache):
+        """
+        :return: dx: the gradient w.r.t. input X, of the same shape as X
+        """
+        
+
+        x = cache
+        dx = np.where(x < 0, self.slope, 1) * dout
+
+        
+        return dx
+
+
+
+class Tanh:
+    def __init__(self):
+        pass
+
+    def forward(self, x):
+        """
+        :param x: Inputs, of any shape
+
+        :return out: Output, of the same shape as x
+        :return cache: Cache, for backward computation, of the same shape as x
+        """
+        
+        outputs = np.tanh(x)
+
+        cache = outputs
+
+       
+        return outputs, cache
+
+    def backward(self, dout, cache):
+        """
+        :return: dx: the gradient w.r.t. input X, of the same shape as X
+        """
+
+        tanh = cache
+
+        dx = dout * (1 - tanh*tanh)
+
+        return dx
 
 def affine_forward(x, w, b):
     """

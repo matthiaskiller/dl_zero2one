@@ -3,6 +3,7 @@ Definition of ImageFolderDataset dataset class
 """
 
 import os
+import random
 
 import numpy as np
 from PIL import Image
@@ -131,3 +132,19 @@ class ImageFolderDataset(Dataset):
 
         return data_dict
 
+class RandomHorizontalFlip:
+    """
+    Transform class that flips an image horizontically randomly with a given probability.
+    """
+
+    def __init__(self, prob=0.5):
+        """
+        :param prob: Probability of the image being flipped
+        """
+        self.p = prob
+
+    def __call__(self, image):
+        rand = random.uniform(0,1)
+        if rand < self.p:
+            image = np.flip(image,1)
+        return image
