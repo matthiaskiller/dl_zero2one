@@ -53,6 +53,6 @@ pip install torch==1.8.1+cpu torchvision==0.9.1+cpu -f https://download.pytorch.
 Datasets will generally be downloaded automatically by notebooks and stored in a common datasets directory shared among all notebooks. A sample directory structure for cifar10 dataset is shown below:-
 
     dl-zero2one
-        ├── datasets                   # The datasets required for all exercises will be downloaded here
+        ├── datasets                   # The datasets required for all notebooks will be downloaded here
             ├── cifar10                # Dataset directory
                 ├── cifar10.p          # dataset files 

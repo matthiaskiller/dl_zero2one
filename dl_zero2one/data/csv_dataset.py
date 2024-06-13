@@ -10,28 +10,25 @@ class CSVDataset(Dataset):
     Provide access to the Boston Housing Prices dataset.
     """
 
-    def __init__(
-            self,
-            target_column,
-            transform=None,
-            mode="train",
-            *args,
-            **kwargs):
+    def __init__(self, target_column, transform=None, mode="train", input_data=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # The name of the .csv dataset file should be the same as the name
         # of the archive, but with a different extension.
-        name_prefix = self.dataset_zip_name[:self.dataset_zip_name.find('.')]
-        dataset_csv_name = name_prefix + '.csv'
-        data_path = os.path.join(self.root_path, dataset_csv_name)
+        if input_data is not None:
+            self.df = input_data
+        else:
+            name_prefix = self.dataset_zip_name[:self.dataset_zip_name.find('.')]
+            dataset_csv_name = name_prefix + '.csv'
+            data_path = os.path.join(self.root_path, dataset_csv_name)
+            self.df = pd.read_csv(data_path)
 
         self.target_column = target_column
-        self.df = pd.read_csv(data_path)
 
         # split the dataset into train - val - test with the ratio 60 - 20 - 20
         assert mode in ["train", "val", "test"], "wrong mode for dataset given"
         train, val, test = np.split(self.df.sample(frac=1, random_state=0), [
-                                    int(.6 * len(self.df)), int(.8 * len(self.df))])
+            int(.6 * len(self.df)), int(.8 * len(self.df))])
         if mode == "train":
             self.df = train
         elif mode == "val":
@@ -43,7 +40,7 @@ class CSVDataset(Dataset):
         self.targets = self.df[self.target_column]
         self.transforms = transform if transform is not None else lambda x: x
 
-        self.data.iloc[0]['OverallQual'] = np.nan
+        self.data.iloc[0]['Overall Qual'] = np.nan
 
     def __len__(self):
         return len(self.data)
@@ -62,7 +59,6 @@ class CSVDataset(Dataset):
         data_dict['target'] = self.targets.iloc[index]
 
         return self.transforms(data_dict)
-
 
 class FeatureSelectorAndNormalizationTransform:
     """
@@ -110,3 +106,75 @@ class FeatureSelectorAndNormalizationTransform:
         data_dict['target'] = np.array([normalized])
 
         return data_dict
+    
+
+class FeatureSelectorTransform:
+    """
+    Select some numerical features and not normalize them, just return their old values.
+    This class is used for the binarized data to convert it to the correct format of CSVDataset object
+    so that it could be loaded by our dataloader
+    """
+
+    def __init__(self, column_stats, target_column):
+        """
+        :param column_stats: a dictionary mapping the column name to the
+            relevant statistics for normalization (min and max on that column).
+            It should also include the statistics for the target column.
+        """
+        self.column_stats = column_stats
+        self.target_column = target_column
+
+    def __call__(self, data_dict):
+
+        # For every feature column, just keep it old values
+
+        feature_columns = []
+        for column_idx in data_dict['features'].index:
+            if column_idx in self.column_stats and column_idx != self.target_column:
+                feature_columns.append(column_idx)
+
+                if np.isnan(data_dict['features'][column_idx]):
+                    mean_col_val = self.column_stats[column_idx]['mean']
+                    data_dict['features'][column_idx] = mean_col_val
+
+        data_dict['features'] = data_dict['features'][feature_columns]
+        data_dict['features'] = data_dict['features'].values.astype(np.float32)
+
+        data_dict['target'] = np.array([data_dict['target']])
+
+        return data_dict
+    
+
+
+def get_exercise4_transform():
+    work_path = os.path.dirname(os.path.abspath(os.getcwd()))
+    root_path = os.path.join(work_path, "datasets", 'housing')
+    housing_file_path = os.path.join(root_path, "AmesHousing.csv")
+    download_url="AmesHousing.zip"
+
+    # Always make sure this line was run at least once before trying to
+    # access the data manually, as the data is downloaded in the 
+    # constructor of CSVDataset.
+    target_column = 'SalePrice'
+    train_dataset = CSVDataset(target_column=target_column, root=root_path, download_url=download_url, mode="train")
+
+
+    # For the data transformations, compute min, max and mean for each feature column. We perform the same transformation
+    # on the training, validation, and test data.
+    df = train_dataset.df
+    # Select only 2 features to keep plus the target column.
+    selected_columns = ['Overall Qual','Gr Liv Area', target_column]
+    df = df[selected_columns]
+    # selected_columns = ['GrLivArea', target_column]
+    mn, mx, mean = df.min(), df.max(), df.mean()
+
+    column_stats = {}
+    for column in selected_columns:
+        crt_col_stats = {'min': mn[column],
+                         'max': mx[column],
+                         'mean': mean[column]}
+        column_stats[column] = crt_col_stats
+
+    transform = FeatureSelectorAndNormalizationTransform(column_stats, target_column)
+
+    return transform
