@@ -10,4 +10,6 @@ dependencies:
 - Pillow
 - seaborn
 - tensorboard
+- pip:
+  - pytorch_lightning
 
