@@ -8,3 +8,5 @@
 *~*
 **/FashionMNIST/
 *.p
+/notebooks/drive-download-20240607T124412Z-001/
+**/tensorboard/
