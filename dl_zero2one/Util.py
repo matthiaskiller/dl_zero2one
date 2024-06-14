@@ -67,7 +67,7 @@ def save_model(model, file_name, directory = "models"):
     
 def test_and_save(model):
         
-    _, val_acc = model.getTestAcc(model.val_dataloader())
+    _, val_acc = model.getAcc(model.val_dataloader())
     print("Validation Accuracy: {}%".format(val_acc*100))
     if val_acc < ACC_THRESHOLD:
         print("That's too low - your model hasn't been saved! Please tune your model in order to reach at least {}% before running on the test set and submitting!".format(ACC_THRESHOLD * 100))
@@ -81,7 +81,7 @@ def test_and_save(model):
         return
     
     print("Your model has been saved and is ready to be submitted. \nNOW, let's check the test accuracy:")
-    _, test_acc = model.getTestAcc()
+    _, test_acc = model.getAcc()
     print("Test Accuracy: {}%".format(test_acc*100))
         
         
