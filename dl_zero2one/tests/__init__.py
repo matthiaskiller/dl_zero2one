@@ -16,3 +16,5 @@ from .dataloader_tests import (
     test_dataloader_iter
 )
 from .eval_utils import save_pickle, load_pickle
+
+from .keypoint_nn_tests import test_keypoint_nn

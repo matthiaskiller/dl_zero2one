@@ -4,8 +4,8 @@ import os
 
 import torch
 
-from exercise_code.tests.base_tests import UnitTest, CompositeTest
-from exercise_code.util.save_model import save_model
+from dl_zero2one.tests.base_tests import UnitTest, CompositeTest
+from dl_zero2one.util.save_model import save_model
 
 
 class KeypointShapeTest(UnitTest):
