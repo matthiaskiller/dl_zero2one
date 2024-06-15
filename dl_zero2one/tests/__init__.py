@@ -18,3 +18,4 @@ from .dataloader_tests import (
 from .eval_utils import save_pickle, load_pickle
 
 from .keypoint_nn_tests import test_keypoint_nn
+from .segmentation_nn_tests import test_seg_nn

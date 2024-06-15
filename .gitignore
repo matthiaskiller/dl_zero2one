@@ -6,12 +6,13 @@
 **/__pycache__/
 *.egg-info/
 *~*
-**/FashionMNIST/
-**/mnist/
+datasets/FashionMNIST/
+datasets/mnist/
+datasets/facial_keypoints/
+datasets/segmentation/
 *.p
 /notebooks/drive-download-20240607T124412Z-001/
 **/tensorboard/
 **/lightning_logs/
 **/dropout_logs/
 **/batch_norm_logs/
-**/facial_keypoints/
